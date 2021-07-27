@@ -1,4 +1,5 @@
 import os
+import pinboard as pb
 import inspect, jinja2
 from datetime import datetime, timedelta 
 
@@ -7,37 +8,29 @@ from email.header import Header
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-import pinboard as pb
-
-def load_env(path):
-    if os.path.exists(path):
-        for line in open(path):
-            var = line.strip().split('=')
-            if len(var) == 2:
-                os.environ[var[0]] = var[1]
+from utilities import loadenv, getenv, info
 
 if __name__ == '__main__':
-    load_env('.env')
+    loadenv('.env')
 
-    token = os.environ['PINBOARD_API_TOKEN']
-    days = int(os.environ['PINBOARD_DIGEST_DAYS'])
+    token = getenv('PINBOARD_API_TOKEN')
+    days = int(getenv('PINBOARD_DIGEST_DAYS'))
 
-    smtp_from_name = os.environ['PINBOARD_DIGEST_SMTP_FROM_NAME']
-    smtp_from_email = os.environ['PINBOARD_DIGEST_SMTP_FROM_EMAIL']
-    smtp_to = os.environ['PINBOARD_DIGEST_SMTP_TO']
-    smtp_server = os.environ['PINBOARD_DIGEST_SMTP_SERVER']
-    smtp_port = os.environ['PINBOARD_DIGEST_SMTP_PORT']
-    smtp_login = os.environ['PINBOARD_DIGEST_SMTP_LOGIN']
-    smtp_password = os.environ['PINBOARD_DIGEST_SMTP_PASSWORD']
+    smtp_from_name = getenv('PINBOARD_DIGEST_SMTP_FROM_NAME')
+    smtp_from_email = getenv('PINBOARD_DIGEST_SMTP_FROM_EMAIL')
+    smtp_to = getenv('PINBOARD_DIGEST_SMTP_TO')
+    smtp_server = getenv('PINBOARD_DIGEST_SMTP_SERVER')
+    smtp_port = getenv('PINBOARD_DIGEST_SMTP_PORT')
+    smtp_login = getenv('PINBOARD_DIGEST_SMTP_LOGIN')
+    smtp_password = getenv('PINBOARD_DIGEST_SMTP_PASSWORD')
 
     pinboard = pb.Pinboard(token)
     fromdt = datetime.today() - timedelta(days=days)
     bookmarks = pinboard.posts.all(fromdt=fromdt)
 
     if len(bookmarks) <= 0:
-        print('No bookmarks saved during the given time period.')
-        print('Pinboard Digest will not be sent.')
-        exit()
+        info('No bookmarks for the given time period. Nothing will be sent.')
+        exit(0)
 
     if days == 1:
         description = 'today'
