@@ -2,7 +2,7 @@
 
 A script that will email a digest of Pinboard bookmarks that have been saved during a given time period.
 
-*All too often, I find myself saving bookmarks for later and then never reading them. With this script running on a cronjob, I give myself things to read at a more convenient time.*
+All too often, I find myself saving bookmarks for later and then never reading them. With this script on a cronjob, I can give myself things to read at a more convenient time.
 
 ## Environment variables
 
